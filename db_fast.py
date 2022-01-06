@@ -11,6 +11,10 @@ from mysql_dal import MysqlDal
 
 
 class DDLDebugWindow(QMainWindow):
+
+    def print_row(self):
+        a = self.structure.currentIndex
+        print(a)
     def describe(self):
         
 
@@ -43,6 +47,9 @@ class DDLDebugWindow(QMainWindow):
         self.structure.setRowCount(row_num+1)
         self.structure.resize(QSize(420,350))
         self.structure.move(320,10)
+        self.structure.itemSelectionChanged.connect(self.print_row)
+
+
         self.structure.show()
 
     def __init__(self, parent=None, db_connection=None):
