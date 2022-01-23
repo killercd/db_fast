@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 
 from PyQt5.QtCore import QSize
 from mysql_dal import MysqlDal
-
+from alter_table import AlterTable
 
 
 
@@ -15,8 +15,11 @@ class DDLDebugWindow(QMainWindow):
     def print_row(self):
         a = self.structure.currentIndex
         print(a)
+    def add_row(self):
+        nwin = AlterTable(self.db_connection)
+        nwin.show()
     def describe(self):
-        
+
 
 
         self.structure = QTableWidget(self)
@@ -43,7 +46,7 @@ class DDLDebugWindow(QMainWindow):
 
             cel_num = 0
             row_num = row_num+1
-        
+
         self.structure.setRowCount(row_num+1)
         self.structure.resize(QSize(420,350))
         self.structure.move(320,10)
@@ -52,22 +55,29 @@ class DDLDebugWindow(QMainWindow):
 
         self.structure.show()
 
+
+
     def __init__(self, parent=None, db_connection=None):
-        
+
         super(DDLDebugWindow, self).__init__(parent)
         self.db_connection = db_connection
-        self.setFixedSize(QSize(900, 600))    
+        self.setFixedSize(QSize(900, 600))
         self.setWindowTitle("Describe Table")
-        
+
         self.table_list = QListWidget(self)
         self.table_list.resize(QSize(300,300))
         self.table_list.move(10,10)
-        
+
 
         self.btn_describe = QPushButton(self)
         self.btn_describe.move(200,310)
         self.btn_describe.setText("Describe")
         self.btn_describe.clicked.connect(self.describe)
+
+        self.btn_alter = QPushButton(self)
+        self.btn_alter.move(320,520)
+        self.btn_alter.setText("Add")
+        self.btn_alter.clicked.connect(self.add_row)
 
         t_tables = self.db_connection.tables()
         c = 0
@@ -75,14 +85,14 @@ class DDLDebugWindow(QMainWindow):
             self.table_list.insertItem(c, table)
             c = c+1
 
-        
-        
-
-        
 
 
-class ExampleWindow(QMainWindow):
-    
+
+
+
+
+class MainWindow(QMainWindow):
+
     def connect(self):
         print("Host: {}".format(self.txt_host.text()))
         self.db_connection = MysqlDal(self.txt_host.text(), self.txt_user.text(), self.txt_password.text(),database=self.txt_database.text())
@@ -120,18 +130,18 @@ class ExampleWindow(QMainWindow):
         self.lbl_user.resize(QSize(120,50))
         self.lbl_user.setText("User")
         self.lbl_user.move(10,70)
-        
+
 
         self.txt_user = QLineEdit(self)
         self.txt_user.resize(QSize(120,30))
         self.txt_user.move(10,105)
         self.txt_user.setText("root")
 
-        
+
         self.lbl_password = QLabel(self)
         self.lbl_password.setText("password")
         self.lbl_password.move(160,80)
-        
+
 
 
         self.txt_password = QLineEdit(self)
@@ -142,7 +152,7 @@ class ExampleWindow(QMainWindow):
         self.lbl_database = QLabel(self)
         self.lbl_database.setText("database")
         self.lbl_database.move(300,80)
-        
+
 
         self.txt_database = QLineEdit(self)
         self.txt_database.resize(QSize(120,30))
@@ -160,14 +170,14 @@ class ExampleWindow(QMainWindow):
     def draw_menu(self):
         self.menu = self.menuBar()
         self.task = self.menu.addMenu("Tables")
-        
+
         self.ddl_debug = QAction("Describe",self)
         self.task.addAction(self.ddl_debug)
         self.task.triggered[QAction].connect(self.processtrigger)
 
         #self.task.addAction("New")
     def create_gui(self):
-        
+
         self.draw_row1()
         self.draw_row2()
         self.draw_menu()
@@ -180,16 +190,16 @@ class ExampleWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.setFixedSize(QSize(600, 600))    
-        self.setWindowTitle("DB Fast") 
+        self.setFixedSize(QSize(600, 600))
+        self.setWindowTitle("DB Fast")
 
         self.create_gui()
         self.db_connection = None
         self.menu = None
-        
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    mainWin = ExampleWindow()
+    mainWin = MainWindow()
     mainWin.show()
     sys.exit( app.exec_() )
